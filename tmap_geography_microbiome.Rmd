@@ -64,21 +64,4 @@ t2 <- flextable(t1)  %>%
 knit_print(t2)
 ```
 
-```{r}
-library(png)
-library(patchwork)
-library(magick)
-
-frink <- image_read("https://jeroen.github.io/images/frink.png")
-
-
-img<-image_read("output/Persistence Diagram all countries.png")
-img2<-readPNG("output/newplot (1).png")
-
-test <- img + img2 + plot_spacer() + plot_layout(ncol = 2) 
-
-
-
-```
-
 
