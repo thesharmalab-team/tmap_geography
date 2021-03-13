@@ -1,0 +1,66 @@
+---
+title: "Test"
+author: "NSharma"
+date: "01/06/2020"
+output:
+  word_document: default
+  output: redoc::redoc
+  html_document:
+    df_print: paged
+  always_allow_html: true  
+params:
+  soln: FALSE  
+---
+
+
+```{r setup, include=FALSE,echo=FALSE, warning=FALSE, results='hide', message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+ # this script loads the packages and installing them if needed
+source("scripts/load_packages.R")
+
+
+meta <- as.data.frame(read_csv('data/metadata_health_all.csv', col_names = TRUE))%>%
+  rename_all( tolower)  %>%
+  dplyr::select('host_age', 'sex: female', 'sex: male', 'bmi: normal', 'bmi: obese','bmi: overweight', 'bmi: underweight', 'country: brazil','country: canada', 'country: china','country: denmark',  'country: france', 'country: germany',  'country: italy','country: new zealand', 'country: spain',  'country: tanzania, united republic of',  'country: united kingdom',  'country: united states of america') %>%
+rename(c('host_age'= 'Age', 'sex: female' = 'female', 'sex: male' = 'male', 'bmi: normal' = 'normal', 'bmi: obese' = 'obese','bmi: overweight' = 'overweight', 'bmi: underweight' = 'underweight', 'country: brazil' = 'Brazil','country: canada' = 'Canada', 'country: china' = "China",'country: denmark' = "Denmark",  'country: france'= "France",'country: germany'= "Germany", 'country: italy'= "Italy",'country: new zealand' = "New Zealand", 'country: spain' = "Spain",  'country: tanzania, united republic of' = "Tanzania",  'country: united kingdom' = "UK",  'country: united states of america' = "USA"))
+
+
+meta$Gender <- names(meta[2:3])[max.col(meta[2:3])]  
+meta$Gender <- as.factor(meta$Gender)
+meta$BMI <- names(meta[4:7])[max.col(meta[4:7])] 
+meta$BMI <- as.factor(meta$BMI)
+meta$Country <- names(meta[8:19])[max.col(meta[8:19])] 
+meta$Country <- as.factor(meta$Country)
+
+
+
+meta <-  dplyr::select(meta,  'Country','Gender', 'BMI','Age')
+meta <- as.data.frame(meta)
+t1 <- tableby(Country ~ Gender + Age + BMI, data = meta,
+            test=FALSE,
+            total=TRUE,
+            numeric.stats=c( "mean","sd"),
+            cat.stats=c("count"), 
+            digits=2 )  %>% as.data.frame() %>% dplyr::select(.,
+                               -group.term,
+                               -group.label,
+                               -strata.term,
+                               -term,
+                               -variable.type,
+                               -variable) 
+
+t2 <- flextable(t1)  %>% 
+    add_header_lines(values = c("Demographic Data") ) %>% 
+    bold(part = "header") %>%
+    bold(i = c(1,4,7)) %>%
+    theme_booktabs() %>% 
+    autofit() %>% 
+    fix_border_issues() 
+
+```
+
+```{r}
+knit_print(t2)
+```
+
