@@ -53,5 +53,6 @@ pacman::p_load(ExperimentHub,
                metagMisc,
                citr,
                knitr,
-               MGnifyR
+               MGnifyR,
+               magick
                )
